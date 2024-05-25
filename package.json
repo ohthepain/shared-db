@@ -1,0 +1,18 @@
+{
+  "name": "shared-db",
+  "version": "1.0.0",
+  "description": "Yep, I share a db across services to reduce AWS costs",
+  "main": "index.js",
+  "scripts": {
+    "foo": "node prisma/concatenate-schemas.js",
+    "generate": "node concatenate-schemas.js && npx prisma generate",
+    "migrate": "node concatenate-schemas.js && npx prisma migrate dev --schema=./prisma/schema.prisma"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.14.0",
+    "prisma": "^5.14.0"
+  }
+}
