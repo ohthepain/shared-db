@@ -8,13 +8,14 @@
 //   url      = env("DATABASE_URL")
 // }
 
-// Uncomment this stuff above if you what to highlight errors
+// Uncomment the stuff above if you want to highlight errors
 
 model YogaUser {
   id           String        @id @default(uuid())
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   yogaSessions YogaSession[]
+  installs     Install[]
 }
 
 model YogaSession {
@@ -24,4 +25,12 @@ model YogaSession {
     sessionId    String
     yogaUserId   String
     yogaUser YogaUser @relation(fields: [yogaUserId], references: [id], onDelete: Cascade)
+}
+
+model Install {
+    id           String        @id @default(uuid())
+    yogaUserId   String
+    yogaUser     YogaUser      @relation(fields: [yogaUserId], references: [id])
+    createdAt    DateTime      @default(now())
+    updatedAt    DateTime      @updatedAt
 }

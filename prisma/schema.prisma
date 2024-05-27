@@ -23,6 +23,8 @@ datasource db {
 //   url      = env("DATABASE_URL")
 // }
 
+// Uncomment the stuff above if you want to highlight errors
+
 enum ConfigStatus {
   CREATED
   WAITING
@@ -39,6 +41,7 @@ model Project {
   bucket    String?  @db.VarChar(1024)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  environments Environment[]
 }
 
 model Branch {
@@ -53,12 +56,12 @@ model Branch {
 }
 
 model Config {
-  id          Int          @unique @default(autoincrement())
+  id          Int          @id @unique @default(autoincrement())
   status      ConfigStatus @default(CREATED)
-  // project     Project      @relation(fields: [projectId], references: [id])
   projectId   String
   branch      Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
   branchId    String
+  environments Environment[]
   userId      String
   user        User         @relation(fields: [userId], references: [id])
   notes       String?      @db.VarChar(1024)
@@ -71,8 +74,12 @@ model Config {
 
 model Environment {
   id                   String   @id @default(uuid())
-  name                 String?
-  configId             String
+  name                 String   @unique
+  projectId            String
+  project              Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  configId             Int?
+  config               Config?   @relation(fields: [configId], references: [id])
+  status               String   @default("CREATED")
   claimedByUserId      String?
   claimedByUser        User?    @relation(fields: [claimedByUserId], references: [id])
   globalTimeTravel     Int
@@ -123,13 +130,14 @@ model UserRole {
 //   url      = env("DATABASE_URL")
 // }
 
-// Uncomment this stuff above if you what to highlight errors
+// Uncomment the stuff above if you want to highlight errors
 
 model YogaUser {
   id           String        @id @default(uuid())
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   yogaSessions YogaSession[]
+  installs     Install[]
 }
 
 model YogaSession {
@@ -139,5 +147,13 @@ model YogaSession {
     sessionId    String
     yogaUserId   String
     yogaUser YogaUser @relation(fields: [yogaUserId], references: [id], onDelete: Cascade)
+}
+
+model Install {
+    id           String        @id @default(uuid())
+    yogaUserId   String
+    yogaUser     YogaUser      @relation(fields: [yogaUserId], references: [id])
+    createdAt    DateTime      @default(now())
+    updatedAt    DateTime      @updatedAt
 }
 
